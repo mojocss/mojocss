@@ -4,6 +4,7 @@ import BreakpointBuilder from "../src/core/builders/breakpoint";
 import Tiny from "../src/core/builders/tiny";
 import StringBuilder from "../src/core/builders/string";
 import config from "../src/interop/mojo.config"
+import PatternBuilder from "../src/core/builders/pattern";
 
 describe('Splitter', () => {
   test('Dynamic Utility', () => {
@@ -209,3 +210,135 @@ describe('CSS String', () => {
 
 });
 
+
+describe('Patterns', () => {
+  let usedColors = {};
+  const defaultColors = ["body", "invert"];
+  for (const color of defaultColors) {
+    usedColors[color] = new Set();
+    usedColors[color].add(0);
+  }
+  
+  const args = {
+    config,
+    userUtilities: {},
+    usedColors,
+    allPseudos: Object.keys(StringBuilder.pseudos),
+  };
+  config.base.themes.dark = {
+    body: "#111111",
+    invert: "#ffffff"
+  }
+  
+  test('Check Simple Pattern', () => {
+    const patterns = {
+      '.test': {
+        'idle': 'text-100',
+      },
+    };
+    
+    let result = new PatternBuilder({...args, patterns}).getStyles();
+    
+    expect(result).toBe('.test{font-size: 1rem}');
+  });
+  
+  
+  test('Check Nested Pattern', () => {
+    const patterns = {
+      '.test': {
+        'idle': 'text-100',
+        'h1': {
+          'idle': 'text-120',
+        },
+      },
+    };
+    
+    let result = new PatternBuilder({...args, patterns}).getStyles();
+    
+    expect(result).toBe('.test{font-size: 1rem}.test h1{font-size: 1.2rem}');
+  });
+  
+  test('Check Variant', () => {
+    const patterns = {
+      '.test': {
+        'hover': 'text-100',
+      },
+    };
+    
+    let result = new PatternBuilder({...args, patterns}).getStyles();
+    
+    expect(result).toBe('.test:hover{font-size: 1rem}');
+  });
+  
+  test('Check Theme', () => {
+    const patterns = {
+      '.test': {
+        'dark': 'text-100',
+      },
+    };
+    
+    let result = new PatternBuilder({...args, patterns}).getStyles();
+    
+    expect(result).toBe('[m-theme="dark"] .test{font-size: 1rem}');
+  });
+  
+  test('Check Breakpoints', () => {
+    const patterns = {
+      '.test': {
+        'sm': 'text-100',
+        'md': 'text-110',
+        'i-sm': 'text-a-center',
+        'i-md': 'text-w-bold',
+      },
+    };
+    
+    let result = new PatternBuilder({...args, patterns}).getStyles();
+    
+    expect(result).toBe('@media only screen and (min-width: 576px) {.test{font-size: 1rem}}@media only screen and (min-width: 768px) {.test{font-size: 1.1rem}}@media only screen and (max-width: 767.98px) {.test{font-weight: 700}}@media only screen and (max-width: 575.98px) {.test{text-align: center}}');
+  });
+  
+  test('Check Keyframe', () => {
+    const patterns = {
+      '@keyframe animation': {
+        '0%, 100%': 'opacity-0',
+        '50%': 'opacity-100',
+      },
+    };
+    
+    let result = new PatternBuilder({...args, patterns}).getStyles();
+    
+    expect(result).toBe('@keyframe animation{0%{opacity: 0}100%{opacity: 0}50%{opacity: 1}}');
+  });
+  
+  
+  test('Check Media Query', () => {
+    const patterns = {
+      '.test': {
+        '@media (max-width: 360px)': 'text-80',
+      },
+    };
+    
+    let result = new PatternBuilder({...args, patterns}).getStyles();
+    
+    expect(result).toBe('@media (max-width: 360px){.test{font-size: 0.8rem}}');
+  });
+  
+  
+  test('Check Style', () => {
+    const patterns = {
+      '.test': 'background: #121212;color: #eee',
+      '.test2': {
+        'style': {
+          "background": "#121212",
+          "color": "#eee",
+          "padding": "1rem",
+        },
+      },
+    };
+    
+    let result = new PatternBuilder({...args, patterns}).getStyles();
+    
+    expect(result).toBe('.test{background: #121212;color: #eee}.test2{background: #121212;color: #eee;padding: 1rem;}');
+  });
+  
+});

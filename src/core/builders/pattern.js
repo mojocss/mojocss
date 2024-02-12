@@ -115,7 +115,7 @@ export default class PatternBuilder {
             if (typeof value === 'string') {
               if (value.includes(";")) {
                 currentCSS += CSSByBody({
-                  selector,
+                  selector: selector.trim(),
                   justBody,
                   ignoreBodyRemove: true,
                   body: value,
@@ -123,7 +123,7 @@ export default class PatternBuilder {
                 })
               } else {
                 currentCSS += CSSByUtilities({
-                  selector,
+                  selector: selector.trim(),
                   classes: value,
                   justBody,
                   ignoreBodyRemove: true,
@@ -132,7 +132,7 @@ export default class PatternBuilder {
               }
             } else if (Array.isArray(value)) {
               currentCSS += CSSByUtilities({
-                selector,
+                selector: selector.trim(),
                 classes: value,
                 justBody,
                 ignoreBodyRemove: true,
@@ -322,12 +322,10 @@ export default class PatternBuilder {
 
   getStyles() {
     let s = this.patternToCSS(this.args.patterns);
-
-    let bps = Object.keys(this.args.config.base.breakpoints)
-      .filter(bp => bp !== "default")
-      .reverse()
-      .map(bp => [bp, "i-" + bp])
-      .flat();
+    
+    let breakpoints = Object.keys(this.args.config.base.breakpoints);
+    let reverseBreakpoints = breakpoints.filter(breakpoint => breakpoint !== "default").map(breakpoint => "i-" + breakpoint).reverse();
+    let bps = [...breakpoints, ...reverseBreakpoints];
 
     for (let i of bps) {
       if (this.bps[i] === undefined)

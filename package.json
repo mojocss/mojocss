@@ -1,6 +1,6 @@
 {
   "name": "mojocss",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "The Atomic CSS Framework for crafting gorgeous UIs without shipping any CSS.",
   "main": "index.js",
   "unpkg": "dist/mojo.min.js",
