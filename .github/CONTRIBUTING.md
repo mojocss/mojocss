@@ -2,7 +2,7 @@
 
 Thanks for considering contributing to Mojo CSS! Before submitting a pull request, please follow these guidelines:
 
-## Feature resquest
+## Feature request
 
 If you have ideas for significant new features, please [discuss](https://github.com/mojocss/mojocss/discussions) them with us first by creating a feature request. This step helps prevent disappointment in case a feature may not align with the project's direction.
 
