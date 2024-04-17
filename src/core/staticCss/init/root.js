@@ -35,10 +35,12 @@ export default class Init {
               for (let k of [...this.usedColors[j]]) {
                 const cname = this.config.base.themes[i][j];
                 if (k > 0) {
-                  const color = ColorConverter.lighten(cname, k * this.config.base.units.lighten);
+                  const lighten = this.config.base.lightenFn || ColorConverter.lighten
+                  const color = lighten(cname, k * this.config.base.units.lighten);
                   CSS += getRootColorCSS(j + "-l-" + k, color);
                 } else if (k < 0) {
-                  const color = ColorConverter.darken(cname, Math.abs(k) * this.config.base.units.darken);
+                  const darken = this.config.base.darkenFn || ColorConverter.darken
+                  const color = darken(cname, Math.abs(k) * this.config.base.units.darken);
                   CSS += getRootColorCSS(j + "-d" + k, color);
                 } else {
                   const color = ColorConverter.parseColor(cname);

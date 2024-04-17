@@ -66,13 +66,15 @@ export default class Color extends Utility {
           color = ColorConverter.parseColor(colorName);
           if (colorName !== value && !isNaN(value)) {
             value = parseInt(value);
+            const lighten = config.base.lightenFn || ColorConverter.lighten;
+            const darken = config.base.darkenFn || ColorConverter.darken;
             if (value > 0)
-              color = ColorConverter.lighten(
+              color = lighten(
                 colorName,
                 value * this.args.config.base.units.lighten
               );
             else if (value < 0) {
-              color = ColorConverter.darken(
+              color = darken(
                 colorName,
                 -value * this.args.config.base.units.darken
               );

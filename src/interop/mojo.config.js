@@ -189,6 +189,8 @@ export default {
       lighten: "2.0",
       darken: "1.2",
     },
+    lightenFn: null,
+    darkenFn: null,
   },
   capsules: [],
   patterns: {},
