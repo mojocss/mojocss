@@ -7,19 +7,38 @@ on:
 
 jobs:
   build:
+    name: Test And Build
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 14
+          node-version: 20
 
       - name: Install dependencies
         run: npm install
 
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm run test
+
       - name: Build
         run: npm run build
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "${{ github.actor }}@users.noreply.github.com"
+          git config --local user.name "${{ github.actor }}"
+          if [[ $(git status --porcelain) ]]; then
+            git add .
+            git commit -m "Update dist directory"
+            git push
+          else
+            echo "No changes to commit. Skipping commit and push."
+          fi
