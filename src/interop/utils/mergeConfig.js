@@ -1,4 +1,13 @@
+/**
+ * Merge new and default configs.
+ * @class
+ */
 export default class MergeConfig {
+    /**
+     * @param {Object} config.
+     * @param {Object} newConfig
+     * @returns {Object}
+     */
     constructor(config, newConfig) {
         if (newConfig !== undefined) {
             const mergeConfigs = (source, target) => {
@@ -19,13 +28,11 @@ export default class MergeConfig {
             };
 
             mergeConfigs(config, newConfig);
-            refactorConfig(config);
-        }
 
-        function refactorConfig(c) {
-            if (c.base !== undefined && c.base.fonts !== undefined && Object.keys(c.base.fonts).length > 0) {
-                config.base.fonts = c.base.fonts;
+            if (newConfig.base && newConfig.base.fonts && Object.keys(newConfig.base.fonts).length > 0) {
+                config.base.fonts = newConfig.base.fonts;
             }
+
             config.base.breakpoints = Object.entries(config.base.breakpoints)
               .sort(([, a], [, b]) => parseInt(a.min) - parseInt(b.min))
               .sort(([, a], [, b]) => parseInt(b.max) - parseInt(a.max))

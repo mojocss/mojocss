@@ -95,5 +95,16 @@ describe('MojoCore:: Check CSS Results', () => {
     expect(css).toBe('[m-id="1"][_~="text-110"] .test:hover{font-size: 1.1rem}');
   });
 
+
+  test('Check print result', () => {
+    const css = mojoCore.init({
+      isExtend: false,
+      pseudo: "print",
+      attribute: "print",
+      classes: ["text-110"],
+    }).getStyles().css;
+
+    expect(css).toBe("@media print{[print~=\"text-110\"]{font-size: 1.1rem}}");
+  });
 });
 

@@ -1,5 +1,0 @@
-export default [
-  "filter: var(--m-f-blur) var(--m-f-brightness) var(--m-f-contrast) var(--m-f-grayscale) var(--m-f-hue-rotate) var(--m-f-invert) var(--m-f-saturate) var(--m-f-sepia) var(--m-f-drop-shadow)",
-  "-webkit-backdrop-filter: var(--m-bf-blur) var(--m-bf-brightness) var(--m-bf-contrast) var(--m-bf-grayscale) var(--m-bf-hue-rotate) var(--m-bf-invert) var(--m-bf-saturate) var(--m-bf-sepia) var(--m-bf-opacity);backdrop-filter: var(--m-bf-blur) var(--m-bf-brightness) var(--m-bf-contrast) var(--m-bf-grayscale) var(--m-bf-hue-rotate) var(--m-bf-invert) var(--m-bf-saturate) var(--m-bf-sepia) var(--m-bf-opacity)",
-  "transform: translateX(var(--m-t-translate-x)) translateY(var(--m-t-translate-y)) translateZ(var(--m-t-translate-z)) rotate(var(--m-t-rotate)) rotateX(var(--m-t-rotate-x)) rotateY(var(--m-t-rotate-y)) rotateZ(var(--m-t-rotate-z)) skewX(var(--m-t-skew-x)) skewY(var(--m-t-skew-y)) scale3d(var(--m-t-scale),var(--m-t-scale),var(--m-t-scale)) scaleX(var(--m-t-scale-x)) scaleY(var(--m-t-scale-y)) scaleZ(var(--m-t-scale-z))",
-];

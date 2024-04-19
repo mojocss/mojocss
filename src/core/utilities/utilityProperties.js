@@ -21,12 +21,12 @@ for (let i in alphaUtls) {
 const border = {};
 const borderSides = ["top", "right", "left", "bottom"];
 for (let i in borderSides) {
-  border["border-" + borderSides[i]] = "border-" + borderSides[i] + "-width";
-  border["border-" + borderSides[i] + "-s"] =
+  border["border-" + borderSides[i][0]] = "border-" + borderSides[i] + "-width";
+  border["border-" + borderSides[i][0] + "-s"] =
     "border-" + borderSides[i] + "-style";
-  border["border-" + borderSides[i] + "-c"] =
+  border["border-" + borderSides[i][0] + "-c"] =
     "border-" + borderSides[i] + "-color";
-  border["border-" + borderSides[i] + "-c-alpha"] =
+  border["border-" + borderSides[i][0] + "-c-alpha"] =
     "--m-border-c" + borderSides[i] + "-alpha";
 }
 
@@ -69,6 +69,37 @@ for (let i in transformUtls) {
   }
 }
 
+const transition = {};
+const ts_prefixes = ["-webkit-", "-o-", ""];
+const ts_delayStr = "-mojo-d-";
+const ts_properties = ["duration", "delay", "timing-function", "property"];
+
+ts_properties.forEach((p, i) => {
+  const type = `transition-${p}`;
+  transition[`ts${i === 0 ? "" : `-${p[0].replace("t", "f")}`}`] =
+    ts_prefixes.map((prefix) => `${ts_delayStr}${prefix}${type}`);
+  transition[`tsm${i === 0 ? "" : `-${p[0].replace("t", "f")}`}`] =
+    ts_prefixes.map((prefix) => `${prefix}${type}`);
+});
+
+const background = {};
+const bg_properties = [
+  "color",
+  "attachment",
+  "origin",
+  "position",
+  "repeat",
+  "size",
+  "img",
+  "blend-mode",
+];
+
+bg_properties.forEach((p) => {
+  background[
+    `bg-${p[0].replace("i", "img").replace("b", "blend")}`
+  ] = `background-${p.replace("img", "image")}`;
+});
+
 export default {
   _: [
     "all",
@@ -85,7 +116,6 @@ export default {
     "cursor",
     "float",
     "perspective",
-    "pointer-events",
     "will-change",
     "columns",
     "top",
@@ -93,12 +123,14 @@ export default {
     "bottom",
     "left",
     "opacity",
-    "flex-grow",
-    "flex-shrink",
     "flex",
     "visibility",
     "clip-path",
   ],
+  "flex-g": "flex-grow",
+  "flex-s": "flex-shrink",
+  "pointer-e": "pointer-events",
+  "user-s": "user-select",
   outline: "outline-width",
   "outline-s": "outline-style",
   "outline-c": "outline-color",
@@ -125,15 +157,8 @@ export default {
   "obj-p": "object-position",
   "box-s": "box-sizing",
   bg: "background",
-  "bg-c": "background-color",
-  "bg-a": "background-attachment",
-  "bg-o": "background-origin",
-  "bg-p": "background-position",
-  "bg-r": "background-repeat",
-  "bg-s": "background-size",
-  "bg-img": "background-image",
-  "bg-blend": "background-blend-mode",
   "bg-clip": "background-clip",
+  ...background,
   ma: "margin",
   mt: "margin-top",
   mb: "margin-bottom",
@@ -141,6 +166,8 @@ export default {
   mr: "margin-right",
   mx: ["margin-left", "margin-right"],
   my: ["margin-top", "margin-bottom"],
+  ms: "margin-inline-start",
+  me: "margin-inline-end",
   pa: "padding",
   pt: "padding-top",
   pb: "padding-bottom",
@@ -148,6 +175,8 @@ export default {
   pr: "padding-right",
   px: ["padding-left", "padding-right"],
   py: ["padding-top", "padding-bottom"],
+  ps: "padding-inline-start",
+  pe: "padding-inline-end",
   gap: "gap",
   "gap-x": ["column-gap", "grid-column-gap"],
   "gap-y": ["row-gap", "grid-row-gap"],
@@ -161,14 +190,14 @@ export default {
   "inset-x": ["right", "left"],
   "inset-y": ["top", "bottom"],
   rounded: "border-radius",
-  "rounded-top": ["border-top-right-radius", "border-top-left-radius"],
-  "rounded-bottom": ["border-bottom-right-radius", "border-bottom-left-radius"],
-  "rounded-right": ["border-top-right-radius", "border-bottom-right-radius"],
-  "rounded-left": ["border-top-left-radius", "border-bottom-left-radius"],
-  "rounded-top-r": "border-top-right-radius",
-  "rounded-top-l": "border-top-left-radius",
-  "rounded-bottom-r": "border-bottom-right-radius",
-  "rounded-bottom-l": "border-bottom-left-radius",
+  "rounded-t": ["border-top-right-radius", "border-top-left-radius"],
+  "rounded-b": ["border-bottom-right-radius", "border-bottom-left-radius"],
+  "rounded-r": ["border-top-right-radius", "border-bottom-right-radius"],
+  "rounded-l": ["border-top-left-radius", "border-bottom-left-radius"],
+  "rounded-t-r": "border-top-right-radius",
+  "rounded-t-l": "border-top-left-radius",
+  "rounded-b-r": "border-bottom-right-radius",
+  "rounded-b-l": "border-bottom-left-radius",
   text: "font-size",
   "text-c": "color",
   "text-a": "text-align",
@@ -190,46 +219,7 @@ export default {
   "border-s": "border-style",
   "border-c": "border-color",
   ...border,
-  ts: [
-    "-mojo-delay--webkit-transition-duration",
-    "-mojo-delay--o-transition-duration",
-    "-mojo-delay-transition-duration",
-  ],
-  "ts-d": [
-    "-mojo-delay--webkit-transition-delay",
-    "-mojo-delay--o-transition-delay",
-    "-mojo-delay-transition-delay",
-  ],
-  "ts-f": [
-    "-mojo-delay--webkit-transition-timing-function",
-    "-mojo-delay--o-transition-timing-function",
-    "-mojo-delay-transition-timing-function",
-  ],
-  "ts-p": [
-    "-mojo-delay--webkit-transition-property",
-    "-mojo-delay--o-transition-property",
-    "-mojo-delay-transition-property",
-  ],
-  tsm: [
-    "-webkit-transition-duration",
-    "-o-transition-duration",
-    "transition-duration",
-  ],
-  "tsm-d": [
-    "-webkit-transition-delay",
-    "-o-transition-delay",
-    "transition-delay",
-  ],
-  "tsm-f": [
-    "-webkit-transition-timing-function",
-    "-o-transition-timing-function",
-    "transition-timing-function",
-  ],
-  "tsm-p": [
-    "-webkit-transition-property",
-    "-o-transition-property",
-    "transition-property",
-  ],
+  ...transition,
   cols: "grid-template-columns",
   rows: "grid-template-rows",
   col: "grid-column",

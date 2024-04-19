@@ -2,20 +2,30 @@ import CssBuilder from "./css.js";
 import Splitter from "./splitter.js";
 import BreakpointBuilder from "./breakpoint.js";
 
+
+/**
+ * PatternBuilder class converts a pattern object into CSS styles.
+ * @class
+ */
 export default class PatternBuilder {
+  /**
+   * Initializes a new instance of the PatternBuilder class.
+   * @param {Object} args - Arguments for pattern conversion.
+   */
   constructor(args) {
     this.args = args;
-    this.bps = {};
-
-    this.stack = [];
+    this.bps = {}; // Object to store CSS styles for different breakpoints
+    this.stack = []; // Stack to keep track of nested selectors
   }
 
+  /**
+   * Converts a pattern object into CSS styles.
+   * @param {Object} currentNode - Current node of the pattern object.
+   * @returns {string} - CSS styles generated from the pattern.
+   */
   patternToCSS(currentNode) {
     let CSS = "";
-    const config = this.args.config;
-    const userUtilities = this.args.userUtilities;
-    const usedColors = this.args.usedColors;
-    const allPseudos = this.args.allPseudos;
+    const {config, userUtilities, usedColors, allPseudos} = this.args;
     const length = Object.keys(currentNode).length;
     let count = 0;
 
@@ -52,7 +62,6 @@ export default class PatternBuilder {
             let obj = {
               names: this.stack[s].names,
               pseudo: [],
-              children: this.stack[s].children,
               selectors: []
             };
 
@@ -70,10 +79,6 @@ export default class PatternBuilder {
               if (this.stack[j].pseudo) {
                 obj.pseudo = [...obj.pseudo, ...this.stack[j].pseudo];
               }
-
-              if (this.stack[j].children)
-                obj.children = this.stack[j].children;
-
             }
 
             if (obj.names.length === 0 && args.theme !== undefined) {
@@ -81,14 +86,16 @@ export default class PatternBuilder {
             }
 
             for (let j of obj.names) {
-              let Selector = CSSByBody({
-                selector: j,
-                body: "",
-                pseudo: obj.pseudo,
-                children: obj.children,
-              })
-              obj.selectors.push(fixString(Selector))
+              if(j.trim().length > 0) {
+                let Selector = CSSByBody({
+                  selector: j,
+                  body: "",
+                  pseudo: obj.pseudo,
+                })
+                obj.selectors.push(fixString(Selector))
+              }
             }
+
             selectors.push(obj.selectors)
           }
 
@@ -145,9 +152,9 @@ export default class PatternBuilder {
 
         if (atSelector) {
           if (config.options.minify === false) {
-            currentCSS = currentCSS.replace(/\n/g, "\n\t");
+            currentCSS = currentCSS.replace(/\n/g, "\n    ");
             currentCSS += "\n}\n";
-            currentCSS = currentCSS.replace(/\n\t\n/g, "\n");
+            currentCSS = currentCSS.replace(/\n{4}\n/g, "\n");
           } else {
             currentCSS += "}";
           }
@@ -169,20 +176,24 @@ export default class PatternBuilder {
 
     return CSS;
 
+    /**
+     * Generates selectors for nested combinations of names and pseudos.
+     * @param {Array} arr - Array of nested selectors.
+     * @param {number} index - Current index in the array.
+     * @param {Array} parents - Array of parent selectors.
+     * @returns {Array} - Array of generated selectors.
+     */
     function getSelectors(arr, index = 0, parents = [""]) {
       let newParents = [];
       for (let c of arr[index]) {
         let S = " ";
-        while (c.startsWith(" "))
-          c = c.substring(1);
+        c = c.trim();
         if (c.startsWith("&")) {
           c = c.substring(1);
           S = "";
         }
-        for (let j in parents) {
-          let p = parents[j];
-          while (p.startsWith("  "))
-            p = p.substring(1);
+        for (let p of parents) {
+          p = p.trim();
           newParents.push(p + ((p !== "") ? S : "") + c)
         }
       }
@@ -226,9 +237,6 @@ export default class PatternBuilder {
               if (!isSelector)
                 ret.pseudo.push(n);
               break;
-            case 3:
-              ret.children = n;
-              break;
             case -1:
               if (n !== "style")
                 ret.names.push(n);
@@ -258,6 +266,11 @@ export default class PatternBuilder {
       return str.replace(/^\s+|\s+$/g, '').replace(/\s+/g, ' ');
     }
 
+    /**
+     * Determines the type of an attribute (theme, breakpoint, or pseudo-class).
+     * @param {string} attribute - The attribute to be checked.
+     * @returns {number} - Type of the attribute.
+     */
     function findAttributeType(attribute) {
       if (attribute.startsWith("i-")) attribute = attribute.substring(2);
 
@@ -267,11 +280,15 @@ export default class PatternBuilder {
       if (config.base.themes[attribute] !== undefined) return 0;
       if (config.base.breakpoints[attribute] !== undefined) return 1;
       if (allPseudos.includes(attribute)) return 2;
-      if (attribute.startsWith("children")) return 3;
 
       return -1;
     }
 
+    /**
+     * Generates CSS styles for a selector with provided body.
+     * @param {Object} args - Arguments for CSS generation.
+     * @returns {string} - CSS styles for the selector.
+     */
     function CSSByBody(args) {
       if (!args.pseudo || args.pseudo.length === 0)
         args.pseudo = ["class"];
@@ -289,8 +306,12 @@ export default class PatternBuilder {
       }).create();
     }
 
+    /**
+     * Generates CSS styles for utility classes applied to a selector.
+     * @param {Object} args - Arguments for CSS generation.
+     * @returns {string} - CSS styles for the selector.
+     */
     function CSSByUtilities(args) {
-      args.body = "";
       let classes;
       if (Array.isArray(args.classes)) {
         classes = args.classes;
@@ -298,12 +319,17 @@ export default class PatternBuilder {
         args.classes = args.classes.replace(/\n|\s{2,}/g, " ");
         classes = args.classes.split(" ");
       }
+
+      const placeholders = [];
+      const body = [];
+
+      let css = [];
       for (let c of classes) {
         if (c.replace(/ /g, "") < 1)
           continue;
 
-        const splittedClass = new Splitter(c, userUtilities);
-        args.body += new CssBuilder({
+        const splittedClass = new Splitter(c, userUtilities, config);
+        let currentBody = new CssBuilder({
           splittedClass,
           config,
           usedColors,
@@ -313,13 +339,31 @@ export default class PatternBuilder {
           justBody: true,
         }).create();
 
-        args.body += ";"
+        if(c.replace("!","").trim().startsWith("placeholder")){
+          placeholders.push(currentBody)
+        } else {
+          body.push(currentBody)
+        }
       }
-      args.body = args.body.substring(0, args.body.length - 1)
-      return CSSByBody(args);
+      args.body = body.join(";");
+      let styles = CSSByBody(args);
+      if(styles.trim().length > 0)
+        css.push(styles);
+
+      args.body = placeholders.join(";");
+      args.selector += "::placeholder";
+      styles = CSSByBody(args);
+      if(styles.trim().length > 0)
+        css.push(styles);
+
+      return css.join("\n");
     }
   }
 
+  /**
+   * Generates CSS styles from the pattern object and inserts breakpoints if needed.
+   * @returns {string} - CSS styles including breakpoints.
+   */
   getStyles() {
     let s = this.patternToCSS(this.args.patterns);
     

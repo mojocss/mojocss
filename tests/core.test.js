@@ -4,6 +4,10 @@ import config from "../src/interop/mojo.config.js";
 describe('MojoCore:: Initialization', () => {
   beforeAll(() => {
     config.options.minify = true;
+    config.base.themes.dark = {
+      body: "#111",
+      invert: "#222",
+    }
   });
   test('Check initialization', () => {
     expect(mojoCore.init({
@@ -42,6 +46,14 @@ describe('MojoCore:: Initialization', () => {
     if(!mojoCore.config) mojoCore.setConfig(config);
     expect(mojoCore.getStyles()).toBeTruthy();
     expect(mojoCore.getStyles().css).toBe('.text-110{font-size: 1.1rem}');
+
+    expect(mojoCore.init({
+      tiny: "@i-lg:i-dark:hover:focus .test",
+      pseudo: "class",
+      attribute: "_",
+      element: "1",
+      classes:["text-110"],
+    }).getStyles().css).toBe('@media only screen and (max-width: 991.98px) {html:not([m-theme="dark"]) [m-id="1"][_~="text-110"] .test:hover:focus{font-size: 1.1rem}}');
   });
 
   test('Check get pattern styles', () => {

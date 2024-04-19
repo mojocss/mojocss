@@ -5,10 +5,8 @@ export default {
   "backdrop-filter-none": "backdrop-filter: none;-webkit-backdrop-filter: none",
   "transform-none":
     "transform: none;-webkit-transform: none;-ms-transform: none",
-  transition:
-    "-mojo-delay-transition-property: all;-webkit--mojo-delay-transition-property: all;-o--mojo-delay-transition-property: all;-mojo-delay-transition-duration: 100ms;-webkit--mojo-delay-transition-duration: 100ms;-o--mojo-delay-transition-duration: 100ms;-mojo-delay-transition-timing-function: ease;-webkit--mojo-delay-transition-timing-function: ease;-o--mojo-delay-transition-timing-function: ease",
   "transition-none":
-    "-mojo-delay-transition-property: none;-webkit--mojo-delay-transition-property: none;-o--mojo-delay-transition-property: none",
+    "-mojo-d-transition-property: none;-webkit--mojo-d-transition-property: none;-o--mojo-d-transition-property: none",
   grid: "display: grid;grid-template-columns: repeat(1, minmax(0, 1fr));grid-gap: 1rem;--m-box-start: start;--m-box-end: end",
   "cols-auto": "grid-template-columns: repeat(auto-fit, minmax(0, 1fr))",
   "rows-auto": "grid-template-rows: repeat(auto-fit, minmax(0, 1fr))",
