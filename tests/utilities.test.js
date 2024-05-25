@@ -221,13 +221,13 @@ describe("MojoCore:: Check Utilities Results", () => {
     "-translate-x-12":
       "--m-t-translate-x: -3rem;\n    transform: translateX(var(--m-t-translate-x)) translateY(var(--m-t-translate-y)) translateZ(var(--m-t-translate-z)) rotate(var(--m-t-rotate)) rotateX(var(--m-t-rotate-x)) rotateY(var(--m-t-rotate-y)) rotateZ(var(--m-t-rotate-z)) skewX(var(--m-t-skew-x)) skewY(var(--m-t-skew-y)) scale3d(var(--m-t-scale),var(--m-t-scale),var(--m-t-scale)) scaleX(var(--m-t-scale-x)) scaleY(var(--m-t-scale-y)) scaleZ(var(--m-t-scale-z))",
     "-translate-x-(5px)":
-      "--m-t-translate-x: translate-x(-(5px));\n    transform: translateX(var(--m-t-translate-x)) translateY(var(--m-t-translate-y)) translateZ(var(--m-t-translate-z)) rotate(var(--m-t-rotate)) rotateX(var(--m-t-rotate-x)) rotateY(var(--m-t-rotate-y)) rotateZ(var(--m-t-rotate-z)) skewX(var(--m-t-skew-x)) skewY(var(--m-t-skew-y)) scale3d(var(--m-t-scale),var(--m-t-scale),var(--m-t-scale)) scaleX(var(--m-t-scale-x)) scaleY(var(--m-t-scale-y)) scaleZ(var(--m-t-scale-z))",
+      "--m-t-translate-x: -5px;\n    transform: translateX(var(--m-t-translate-x)) translateY(var(--m-t-translate-y)) translateZ(var(--m-t-translate-z)) rotate(var(--m-t-rotate)) rotateX(var(--m-t-rotate-x)) rotateY(var(--m-t-rotate-y)) rotateZ(var(--m-t-rotate-z)) skewX(var(--m-t-skew-x)) skewY(var(--m-t-skew-y)) scale3d(var(--m-t-scale),var(--m-t-scale),var(--m-t-scale)) scaleX(var(--m-t-scale-x)) scaleY(var(--m-t-scale-y)) scaleZ(var(--m-t-scale-z))",
     "translate-y-12":
       "--m-t-translate-y: 3rem;\n    transform: translateX(var(--m-t-translate-x)) translateY(var(--m-t-translate-y)) translateZ(var(--m-t-translate-z)) rotate(var(--m-t-rotate)) rotateX(var(--m-t-rotate-x)) rotateY(var(--m-t-rotate-y)) rotateZ(var(--m-t-rotate-z)) skewX(var(--m-t-skew-x)) skewY(var(--m-t-skew-y)) scale3d(var(--m-t-scale),var(--m-t-scale),var(--m-t-scale)) scaleX(var(--m-t-scale-x)) scaleY(var(--m-t-scale-y)) scaleZ(var(--m-t-scale-z))",
     "-translate-y-12":
       "--m-t-translate-y: -3rem;\n    transform: translateX(var(--m-t-translate-x)) translateY(var(--m-t-translate-y)) translateZ(var(--m-t-translate-z)) rotate(var(--m-t-rotate)) rotateX(var(--m-t-rotate-x)) rotateY(var(--m-t-rotate-y)) rotateZ(var(--m-t-rotate-z)) skewX(var(--m-t-skew-x)) skewY(var(--m-t-skew-y)) scale3d(var(--m-t-scale),var(--m-t-scale),var(--m-t-scale)) scaleX(var(--m-t-scale-x)) scaleY(var(--m-t-scale-y)) scaleZ(var(--m-t-scale-z))",
     "-translate-y-(5px)":
-      "--m-t-translate-y: translate-y(-(5px));\n    transform: translateX(var(--m-t-translate-x)) translateY(var(--m-t-translate-y)) translateZ(var(--m-t-translate-z)) rotate(var(--m-t-rotate)) rotateX(var(--m-t-rotate-x)) rotateY(var(--m-t-rotate-y)) rotateZ(var(--m-t-rotate-z)) skewX(var(--m-t-skew-x)) skewY(var(--m-t-skew-y)) scale3d(var(--m-t-scale),var(--m-t-scale),var(--m-t-scale)) scaleX(var(--m-t-scale-x)) scaleY(var(--m-t-scale-y)) scaleZ(var(--m-t-scale-z))",
+      "--m-t-translate-y: -5px;\n    transform: translateX(var(--m-t-translate-x)) translateY(var(--m-t-translate-y)) translateZ(var(--m-t-translate-z)) rotate(var(--m-t-rotate)) rotateX(var(--m-t-rotate-x)) rotateY(var(--m-t-rotate-y)) rotateZ(var(--m-t-rotate-z)) skewX(var(--m-t-skew-x)) skewY(var(--m-t-skew-y)) scale3d(var(--m-t-scale),var(--m-t-scale),var(--m-t-scale)) scaleX(var(--m-t-scale-x)) scaleY(var(--m-t-scale-y)) scaleZ(var(--m-t-scale-z))",
     "rotate-45":
       "--m-t-rotate: 45deg;\n    transform: translateX(var(--m-t-translate-x)) translateY(var(--m-t-translate-y)) translateZ(var(--m-t-translate-z)) rotate(var(--m-t-rotate)) rotateX(var(--m-t-rotate-x)) rotateY(var(--m-t-rotate-y)) rotateZ(var(--m-t-rotate-z)) skewX(var(--m-t-skew-x)) skewY(var(--m-t-skew-y)) scale3d(var(--m-t-scale),var(--m-t-scale),var(--m-t-scale)) scaleX(var(--m-t-scale-x)) scaleY(var(--m-t-scale-y)) scaleZ(var(--m-t-scale-z))",
     "-rotate-45":
@@ -358,7 +358,16 @@ describe("MojoCore:: Check Utilities Results", () => {
     "blur-10": "--m-f-blur: blur(10px);\n" +
       "    filter: var(--m-f-blur) var(--m-f-brightness) var(--m-f-contrast) var(--m-f-grayscale) var(--m-f-hue-rotate) var(--m-f-invert) var(--m-f-saturate) var(--m-f-sepia) var(--m-f-drop-shadow)",
     "box-shadow:1rem_1rem_0.5rem_1rem": "box-shadow: 1rem 1rem 0.5rem 1rem",
+    "-webkit-box-orient:vertical": "-webkit-box-orient: vertical",
+    "-webkit-line-clamp:2": "-webkit-line-clamp: 2",
+    "bg-($c.primary)": "background: #ff6145",
+    "blur-(10px)": "--m-f-blur: blur(10px);\n" +
+      "    filter: var(--m-f-blur) var(--m-f-brightness) var(--m-f-contrast) var(--m-f-grayscale) var(--m-f-hue-rotate) var(--m-f-invert) var(--m-f-saturate) var(--m-f-sepia) var(--m-f-drop-shadow)",
+    "-backdrop-blur-(10px)": "--m-bf-blur: blur(-10px);\n" +
+      "    -webkit-backdrop-filter: var(--m-bf-blur) var(--m-bf-brightness) var(--m-bf-contrast) var(--m-bf-grayscale) var(--m-bf-hue-rotate) var(--m-bf-invert) var(--m-bf-saturate) var(--m-bf-sepia) var(--m-bf-opacity);\n" +
+      "    backdrop-filter: var(--m-bf-blur) var(--m-bf-brightness) var(--m-bf-contrast) var(--m-bf-grayscale) var(--m-bf-hue-rotate) var(--m-bf-invert) var(--m-bf-saturate) var(--m-bf-sepia) var(--m-bf-opacity)",
   };
+
 
   utilities = Object.fromEntries(
     Object.entries(utilities).sort(([a], [b]) => {

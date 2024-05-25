@@ -60,7 +60,7 @@ describe('Splitter', () => {
 
     expect(splitterInstance.className).toBe('bg-c-\\(red\\)');
     expect(splitterInstance.name).toBe('bg-c');
-    expect(splitterInstance.value).toBe('(red)');
+    expect(splitterInstance.value).toBe('red');
     expect(splitterInstance.props).toBe("background-color");
     expect(splitterInstance.appends).toBe(undefined);
     expect(splitterInstance.body).toBe(undefined);
@@ -90,7 +90,7 @@ describe('Splitter', () => {
 
     expect(splitterInstance.className).toBe('transform\\:none');
     expect(splitterInstance.name).toBe('transform');
-    expect(splitterInstance.value).toBe("(none)");
+    expect(splitterInstance.value).toBe("none");
     expect(splitterInstance.props).toBe("transform");
     expect(splitterInstance.appends).toBe(undefined);
     expect(splitterInstance.body).toBe(undefined);

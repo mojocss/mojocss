@@ -26,7 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Patten bugs**: Fixed some bugs in patterns.
 - **CSS String Bugs**: Fixed some bugs in CSS string generation.
-- **Calc Regex Bug**: According to ([#13](https://github.com/mojocss/mojocss/issues/13))
+- **User Reported Bugs**: More details in [#13](https://github.com/mojocss/mojocss/issues/13), [#17](https://github.com/mojocss/mojocss/issues/17), [#20](https://github.com/mojocss/mojocss/issues/20), [#21](https://github.com/mojocss/mojocss/issues/21)
 - **Media Query Bugs**: Fixed bugs in generating media queries for variants like `print`.
 
 ## [0.1.1] - 2024-02-12
