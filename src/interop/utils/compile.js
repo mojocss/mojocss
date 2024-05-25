@@ -269,17 +269,19 @@ export default class Compile {
    */
   parseTiny(string) {
     const objects = [];
-    const ruleRegex = /\(([^()]|\(([^()]+)\))*\)\s*(.*?)(?=\s*\(|$)/g;
-    let match;
-    while ((match = ruleRegex.exec(string)) !== null) {
-      const selector = match[0]
-        .match(/\(([^()]|\(([^()]+)\))*\)/)[0]
-        .replace(/^\(|\)$/g, "");
-      const rules = match[3];
-      const newObj = {selector, rules};
-      
-      objects.push(newObj);
-    }
+    const spl = (" " + string).split(" (");
+    spl.map(value => {
+      const valSpl = value.split(")")
+      const selector = valSpl.shift().trim();
+      const rules = valSpl.join(")").trim();
+
+      if(selector && rules)
+        objects.push({
+          selector,
+          rules,
+        });
+    })
+
     return objects;
   }
 }

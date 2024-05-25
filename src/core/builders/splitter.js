@@ -59,6 +59,7 @@ export default class Splitter {
       name = classNameSpl.join("-"),
       props = undefined,
       isForcedValue = false,
+      isDirectUtility = false,
       body = undefined;
 
     if (
@@ -66,11 +67,12 @@ export default class Splitter {
       !classNameSplDirect[1].startsWith("+") &&
       !classNameSplDirect[1].startsWith("-")
     ) {
-      value = "(" + classNameSplDirect[1] + ")";
+      value = classNameSplDirect[1];
       props = classNameSplDirect[0];
       isForcedValue = true;
+      isDirectUtility = true;
     } else if (classNameSplDynamic[1] !== undefined) {
-      value = "(" + classNameSplDynamic[1];
+      value = classNameSplDynamic[1].substring(0, classNameSplDynamic[1].length - 1);
       props = UtilityProperties[name];
       if (props === undefined && UtilityProperties["_"].includes(name)) {
         props = name;
@@ -118,7 +120,8 @@ export default class Splitter {
       name = value;
     }
 
-    if (isNegative) value = "-" + value;
+    if (!isDirectUtility && isNegative)
+      value = value.startsWith("-") ? value.substring(1) : "-" + value;
 
     return {
       className: prefix + className,
@@ -128,6 +131,7 @@ export default class Splitter {
       appends,
       body,
       isForcedValue,
+      isDirectUtility,
       isImportant,
     };
   }

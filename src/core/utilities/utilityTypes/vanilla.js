@@ -52,13 +52,10 @@ export default class Vanilla extends Utility {
    * @returns {string} - Processed value of the utility property.
    */
   processProp(name, prop, value) {
-    if (this.args.isForcedValue) return this.processVariables(prop, value);
-
     const { args } = this,
       { units, definedValues, fonts, breakpoints } = args.config.base;
     let factor = 0,
       template;
-
     let propMappings = {
       "--m-f-": { t: `${name}(%d)` },
       "--m-bf-": { t: `${name.replace("backdrop-", "")}(%d)` },
@@ -75,7 +72,7 @@ export default class Vanilla extends Utility {
       },
     };
 
-    if (args.isNumber) {
+    if (args.isNumber && !this.args.isForcedValue) {
       factor = units.sizing;
 
       propMappings = {
@@ -174,7 +171,6 @@ export default class Vanilla extends Utility {
         value = isNeg ? `-${maxWidth}` : maxWidth;
       }
       if (value === "current") value = "currentColor";
-      if (value.includes("calc")) value = value.replace(/([-+*/])/g, " $1 ");
     }
 
     const setMapping = (m, k) => {
@@ -210,6 +206,9 @@ export default class Vanilla extends Utility {
     if (template) {
       value = template.replace(/%d/, value);
     }
+
+    if (this.args.isForcedValue) return this.processVariables(prop, value);
+
     return value;
   }
 
@@ -220,9 +219,6 @@ export default class Vanilla extends Utility {
    * @returns {string} - Processed value of the utility property with variables resolved.
    */
   processVariables(prop, value) {
-    if (prop.startsWith("--m")) {
-      value = `${prop.replace(/--m-[^-]+-(\w+)/g, "$1")}(${value})`;
-    }
     const pattern = /\$[a-zA-Z_][a-zA-Z0-9_.]*/g;
     const colorRegex = /\$c\.(\w+)/g;
 
