@@ -13,7 +13,7 @@ import Tiny from "./builders/tiny.js";
  * @class
  */
 class MojoCore {
-  version = "0.2.0-rc.12";
+  version = "0.2.0-rc.13";
 
   /**
    * Initializes the MojoCore instance.

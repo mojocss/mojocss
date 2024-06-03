@@ -268,19 +268,46 @@ export default class Compile {
    * @returns {Array} - Parsed tiny CSS objects.
    */
   parseTiny(string) {
-    const objects = [];
-    const spl = (" " + string).split(" (");
-    spl.map(value => {
-      const valSpl = value.split(")")
-      const selector = valSpl.shift().trim();
-      const rules = valSpl.join(")").trim();
+    string = string
+      .replace(/[\n\t\r]+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
 
-      if(selector && rules)
-        objects.push({
-          selector,
-          rules,
-        });
+    const objects = [];
+    const chars = string.split('');
+
+    let stack = [], beforeChar = '', isSelector, obj = {selector: '', rules: ''};
+    chars.map(char => {
+      if(char === "("){
+        if(stack.length === 0 && beforeChar !== '-'){
+          isSelector = true;
+          if(obj.selector && obj.rules) {
+            objects.push(obj);
+          }
+          obj = {selector: '', rules: ''};
+        }
+
+        stack.push(1);
+      }
+
+      if(isSelector){
+        if(stack.length !== 1 || (char !== "(" && char !== ")"))
+          obj.selector += char;
+      } else {
+        obj.rules += char;
+      }
+
+      if(char === ")"){
+        stack.pop();
+
+        if(stack.length === 0){
+          isSelector = false;
+        }
+      }
+
+      beforeChar = char;
     })
+    objects.push(obj)
 
     return objects;
   }
