@@ -17,6 +17,9 @@ export default class BreakpointBuilder {
    * @returns {string} - The CSS string with breakpoints inserted.
    */
   insertBreakpoint(CSS) {
+    if(!CSS.trim())
+      return CSS;
+
     const {config, allPseudos} = this.args;
     let {pseudo} = this.args;
     let bpName = this.args.breakpoint;
@@ -95,7 +98,7 @@ export default class BreakpointBuilder {
     let bpCss = `@media ${bp.media.join(" and ")}${bp.min ? " and " + getQuery('min', bp.min) : ""}${bp.max ? " and " + getQuery('max', bp.max) : ""}`;
 
     if(this.args.tiny && this.args.tiny.parent.startsWith("@media"))
-      bpCss += `${this.args.tiny ? "and " + this.args.tiny.parent.replace("@media","") : ""}`;
+      bpCss += `${this.args.tiny ? " and " + this.args.tiny.parent.replace("@media","") : ""}`;
 
 
     if (this.args.config.options.minify === false)
