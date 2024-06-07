@@ -10,7 +10,7 @@ describe('Splitter', () => {
   test('Dynamic Utility', () => {
     const className = 'bg-c-red';
     const userUtilities = {};
-    const splitterInstance = new Splitter(className, userUtilities);
+    const splitterInstance = new Splitter(className, userUtilities, config);
 
     expect(splitterInstance.className).toBe('bg-c-red');
     expect(splitterInstance.name).toBe('bg-c');
@@ -25,7 +25,7 @@ describe('Splitter', () => {
   test('Important Dynamic Utility', () => {
     const className = '!bg-c-red';
     const userUtilities = {};
-    const splitterInstance = new Splitter(className, userUtilities);
+    const splitterInstance = new Splitter(className, userUtilities, config);
 
     expect(splitterInstance.className).toBe('bg-c-red');
     expect(splitterInstance.name).toBe('bg-c');
@@ -40,7 +40,7 @@ describe('Splitter', () => {
   test('Dynamic Utility With Append', () => {
     const className = 'bg-c-red[50]';
     const userUtilities = {};
-    const splitterInstance = new Splitter(className, userUtilities);
+    const splitterInstance = new Splitter(className, userUtilities, config);
 
     expect(splitterInstance.className).toBe('bg-c-red\\[50\\]');
     expect(splitterInstance.name).toBe('bg-c');
@@ -56,11 +56,11 @@ describe('Splitter', () => {
   test('Forced Dynamic Utility', () => {
     const className = 'bg-c-(red)';
     const userUtilities = {};
-    const splitterInstance = new Splitter(className, userUtilities);
+    const splitterInstance = new Splitter(className, userUtilities, config);
 
     expect(splitterInstance.className).toBe('bg-c-\\(red\\)');
     expect(splitterInstance.name).toBe('bg-c');
-    expect(splitterInstance.value).toBe('(red)');
+    expect(splitterInstance.value).toBe('red');
     expect(splitterInstance.props).toBe("background-color");
     expect(splitterInstance.appends).toBe(undefined);
     expect(splitterInstance.body).toBe(undefined);
@@ -71,7 +71,7 @@ describe('Splitter', () => {
   test('Static Utility', () => {
     const className = 'outline-none';
     const userUtilities = {};
-    const splitterInstance = new Splitter(className, userUtilities);
+    const splitterInstance = new Splitter(className, userUtilities, config);
 
     expect(splitterInstance.className).toBe('outline-none');
     expect(splitterInstance.name).toBe('outline-none');
@@ -86,11 +86,11 @@ describe('Splitter', () => {
   test('Auto Utility', () => {
     const className = 'transform:none';
     const userUtilities = {};
-    const splitterInstance = new Splitter(className, userUtilities);
+    const splitterInstance = new Splitter(className, userUtilities, config);
 
     expect(splitterInstance.className).toBe('transform\\:none');
-    expect(splitterInstance.name).toBe('transform:none');
-    expect(splitterInstance.value).toBe("(none)");
+    expect(splitterInstance.name).toBe('transform');
+    expect(splitterInstance.value).toBe("none");
     expect(splitterInstance.props).toBe("transform");
     expect(splitterInstance.appends).toBe(undefined);
     expect(splitterInstance.body).toBe(undefined);
@@ -103,7 +103,7 @@ describe('CssBuilder', () => {
   test('Test Builder', () => {
     const className = 'text-110';
     const userUtilities = {};
-    const splittedClass = new Splitter(className, userUtilities);
+    const splittedClass = new Splitter(className, userUtilities, config);
 
     const args = {
       config,
@@ -132,6 +132,7 @@ describe('Breakpoint', () => {
       config,
       breakpoint: 'sm',
       pseudo: 'class',
+      allPseudos: StringBuilder.pseudos
     };
 
     const breakpointBuilderInstance = new BreakpointBuilder(args);
@@ -149,7 +150,7 @@ describe('Tiny', () => {
   test('Test Child', () => {
     const tinyInstance = new Tiny();
 
-    const result = tinyInstance.parseTiny(".card");
+    const result = tinyInstance.parseTiny(".card", config, Object.keys(StringBuilder.pseudos));
 
     expect(result.child).toBe('.card');
   });
@@ -157,7 +158,7 @@ describe('Tiny', () => {
   test('Test Parent', () => {
     const tinyInstance = new Tiny();
 
-    const result = tinyInstance.parseTiny("<.parent");
+    const result = tinyInstance.parseTiny("<.parent", config, Object.keys(StringBuilder.pseudos));
 
     expect(result.parent).toBe('.parent');
   });
@@ -166,10 +167,22 @@ describe('Tiny', () => {
   test('Test Parent and Child', () => {
     const tinyInstance = new Tiny();
 
-    const result = tinyInstance.parseTiny("<.parent {.card:hover}");
+    const result = tinyInstance.parseTiny("<.parent {.card:hover}", config, Object.keys(StringBuilder.pseudos));
 
     expect(result.parent).toBe('.parent');
     expect(result.child).toBe('.card:hover');
+  });
+
+  test('Test Variant', () => {
+    const tinyInstance = new Tiny();
+
+    const result = tinyInstance.parseTiny("@dark", config, Object.keys(StringBuilder.pseudos));
+    const result2 = tinyInstance.parseTiny("@md", config, Object.keys(StringBuilder.pseudos));
+    const result3 = tinyInstance.parseTiny("@hover", config, Object.keys(StringBuilder.pseudos));
+
+    expect(result.args.theme).toBe('dark');
+    expect(result2.args.breakpoint).toBe('md');
+    expect(result3.args.pseudo[0]).toBe('hover');
   });
 
 });
@@ -212,13 +225,8 @@ describe('CSS String', () => {
 
 
 describe('Patterns', () => {
-  let usedColors = {};
-  const defaultColors = ["body", "invert"];
-  for (const color of defaultColors) {
-    usedColors[color] = new Set();
-    usedColors[color].add(0);
-  }
-  
+  const usedColors = ["body", "invert"];
+
   const args = {
     config,
     userUtilities: {},
@@ -280,6 +288,18 @@ describe('Patterns', () => {
     let result = new PatternBuilder({...args, patterns}).getStyles();
     
     expect(result).toBe('[m-theme="dark"] .test{font-size: 1rem}');
+  });
+
+  test('Check Theme And Pseudo', () => {
+    const patterns = {
+      '.test': {
+        'dark:focus:hover': 'text-100',
+      },
+    };
+
+    let result = new PatternBuilder({...args, patterns}).getStyles();
+
+    expect(result).toBe('[m-theme="dark"] .test:focus:hover{font-size: 1rem}');
   });
   
   test('Check Breakpoints', () => {

@@ -1,36 +1,62 @@
+import { filter, transform } from "../utilities/defaults.js";
+/**
+ * Generates initial CSS styles.
+ * @class
+ */
 export default class Init {
+  /**
+   * Initializes the Init instance.
+   * @param {Object} config - The configuration object.
+   */
   constructor(config) {
     this.config = config;
   }
 
+  /**
+   * Generates initial CSS styles.
+   * @returns {string} - The initial CSS styles.
+   */
   getCss() {
     let CSS = "";
-
-    const minify = this.config.options.minify;
+    const { options, base } = this.config;
+    const { minify, prefix } = options;
+    let defaults = [
+      ...filter.map(
+        (prop) => `--m-f-${prop === "opacity" ? "drop-shadow" : prop}: ;`
+      ),
+      ...filter.map((prop) => `--m-bf-${prop}: ;`),
+      ...transform.map(
+        (prop) =>
+          `--m-t-${prop
+            .replace(/[A-Z]/g, "-$&")
+            .replace("3d", "")
+            .toLowerCase()}: ${prop.includes("scale") ? "1" : "0"};`
+      ),
+    ].join("");
 
     CSS += getCSS(
       "*, ::before, ::after",
-      "--m-f-blur: ;--m-f-brightness: ;--m-f-contrast: ;--m-f-grayscale: ;--m-f-hue-rotate: ;--m-f-invert: ;--m-f-saturate: ;--m-f-sepia: ;--m-f-drop-shadow: ;--m-bf-blur: ;--m-bf-brightness: ;--m-bf-contrast: ;--m-bf-grayscale: ;--m-bf-hue-rotate: ;--m-bf-invert: ;--m-bf-saturate: ;--m-bf-sepia: ;--m-bf-drop-shadow: ;--m-bf-opacity: ;--m-t-translate-x: 0;--m-t-translate-y: 0;--m-t-translate-z: 0;--m-t-rotate: 0;--m-t-rotate-x: 0;--m-t-rotate-y: 0;--m-t-rotate-z: 0;--m-t-skew-x: 0;--m-t-skew-y: 0;--m-t-scale: 1;--m-t-scale-x: 1;--m-t-scale-y: 1;--m-t-scale-z: 1"
+      defaults.substring(0, defaults.length - 1)
     );
-    if (this.config.options.initialStyles !== false) {
+    if (options.initialStyles !== false) {
       CSS += getCSS(
         "*",
         "margin: 0;padding: 0;box-sizing: border-box;-webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important"
       );
-      CSS += getCSS("*,*::before,*::after", "border: 0 solid #00000000;");
+      CSS += getCSS("*,*::before,*::after", "border: 0 solid #00000000");
       CSS += getCSS("html", "font-size: 100%;-webkit-text-size-adjust: 100%");
       CSS += getCSS(
         "article, aside, figcaption, figure, footer, header, hgroup, main, nav, section ",
         "display: block"
       );
-      let direction = this.config.options.rtl ? "rtl" : "ltr";
+      let direction = options.rtl ? "rtl" : "ltr";
       CSS += getCSS(
         "body",
-        "--m-bg-alpha: 1;--m-text-alpha: 1;background-color: rgba(var(--m-color-body), var(--m-bg-alpha));color: rgba(var(--m-color-invert), var(--m-text-alpha));font-size: 1rem;font-weight: 400;line-height: 1.5;" +
+        "--m-bg-alpha: 1;--m-text-alpha: 1;background-color: hsla(var(--m-color-body),calc(var(--m-color-body-l) + var(--m-bg-lightness,0%)), var(--m-bg-alpha,1));color:  hsla(var(--m-color-invert),calc(var(--m-color-invert-l) + var(--m-text-lightness,0%)), var(--m-text-alpha,1));font-size: 1rem;font-weight: 400;line-height: 1.5;" +
           `direction: ${direction}`
       );
 
-      let font = this.config.base.fonts[Object.keys(this.config.base.fonts)[0]];
+      let font = base.fonts[Object.keys(base.fonts)[0]];
       let fontName;
       if (typeof font === typeof "") {
         fontName = font;
@@ -66,88 +92,67 @@ export default class Init {
       CSS += getCSS("iframe", "margin: 0");
       CSS += getCSS("table", "border-collapse: collapse;border-spacing: 0");
       CSS += getCSS("td, th", "padding: 0");
-      let directionAlign = this.config.options.rtl ? "right" : "left";
+      let directionAlign = options.rtl ? "right" : "left";
       CSS += getCSS(
         "td:not([align]), th:not([align])",
         "text-align: " + directionAlign
       );
 
+      CSS += getCSS("html", `font-size: ${base.breakpoints.default.fontSize}`);
       CSS += getCSS(
-        "html",
-        `font-size: ${this.config.base.breakpoints.default.fontSize}`
+        `.${prefix}container, .${prefix}container-fluid`,
+        `width: 100%;margin: 0 auto;padding: ${base.breakpoints.default.container.padding}`
       );
-      CSS += getCSS(
-        ".container, .container-fluid",
-        `width: 100%;margin: 0 auto;padding: ${this.config.base.breakpoints.default.container.padding}`
-      );
-      if (
-        this.config.base.breakpoints.default.container !== undefined &&
-        this.config.base.breakpoints.default.container.maxWidth !== undefined
-      ) {
+      if (base.breakpoints.default.container?.maxWidth) {
         CSS += getCSS(
-          ".container",
-          `max-width: ${this.config.base.breakpoints.default.container.maxWidth}`
+          `.${prefix}container`,
+          `max-width: ${base.breakpoints.default.container.maxWidth}`
         );
       }
-      for (let bp in this.config.base.breakpoints) {
-        if (!this.config.base.breakpoints.hasOwnProperty(bp) || bp === "default") continue;
 
-        const bpo = this.config.base.breakpoints[bp];
+      const mediaStr = "@media only screen and";
+      for (let bp in base.breakpoints) {
+        if (!base.breakpoints.hasOwnProperty(bp) || bp === "default") continue;
+
+        const bpo = base.breakpoints[bp];
         let b_min = bpo.min;
         let b_max = bpo.max;
         let c1 = "",
           c2 = "",
           c3 = "";
 
-        if (
-          bpo.container !== undefined &&
-          bpo.container.padding !== undefined &&
-          bpo.container.maxWidth !== undefined
-        ) {
+        if (bpo.container?.padding?.maxWidth) {
           c1 = `padding: ${bpo.container.padding};max-width: ${bpo.container.maxWidth}`;
           c2 = `padding: ${bpo.container.padding}`;
-        } else if (
-          bpo.container !== undefined &&
-          bpo.container.padding !== undefined
-        ) {
+        } else if (bpo.container?.padding) {
           c1 = c2 = `padding: ${bpo.container.padding}`;
-        } else if (
-          bpo.container !== undefined &&
-          bpo.container.maxWidth !== undefined
-        ) {
+        } else if (bpo.container?.maxWidth) {
           c1 = `max-width: ${bpo.container.maxWidth}`;
         }
-        if (bpo.fontSize !== undefined) {
+        if (bpo.fontSize) {
           c3 = `font-size: ${bpo.fontSize}`;
         }
 
         let body = "";
-        if (c1 !== "") body += `.container {${c1}}`;
-        if (c2 !== "") body += `.container-fluid {${c2}}`;
+        if (c1 !== "") body += `.${prefix}container {${c1}}`;
+        if (c2 !== "") body += `.${prefix}container-fluid {${c2}}`;
         if (c3 !== "") body += `html {${c3}}`;
 
         if (body !== "") {
-          if (b_min !== undefined && b_max !== undefined && body !== "") {
+          if (b_min && b_max && body !== "") {
             CSS += getContainerCSS(
-              `@media only screen and (min-width: ${b_min}) and (max-width:${b_max})`,
+              `${mediaStr} (min-width: ${b_min}) and (max-width:${b_max})`,
               body
             );
           }
-          if (b_min !== undefined && b_max === undefined && body !== "") {
-            CSS += getContainerCSS(
-              `@media only screen and (min-width: ${b_min})`,
-              body
-            );
+          if (b_min && !b_max && body !== "") {
+            CSS += getContainerCSS(`${mediaStr} (min-width: ${b_min})`, body);
           }
-          if (b_min === undefined && b_max !== undefined && body !== "") {
-            CSS += getContainerCSS(
-              `@media only screen and (max-width:${b_max})`,
-              body
-            );
+          if (!b_min && b_max && body !== "") {
+            CSS += getContainerCSS(`${mediaStr} (max-width:${b_max})`, body);
           }
         }
       }
-
     }
 
     function getContainerCSS(name, body) {

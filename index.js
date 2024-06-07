@@ -1,8 +1,10 @@
-import mojo from "./src/interop/dom.js";
+import mojoDOM from "./src/interop/dom.js";
 
-export default function m(config) {
-    mojo(config);
+const m = (config) => mojoDOM.render(config);
+try {
+    if(window) window.mojo = m;
+} catch (e) {
+    // eslint-disable-next-line no-empty
 }
 
-if(window)
-    window.mojo = m;
+export default m;

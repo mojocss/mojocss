@@ -1,3 +1,5 @@
-import mojo from "./src/interop/dom.js";
+import mojoDOM from "./src/interop/dom.js";
 
-window.mojo = mojo;
+window.mojo = function (c) {
+  mojoDOM.render(c)
+};

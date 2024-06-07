@@ -1,20 +1,28 @@
+/**
+ * StringBuilder class for building CSS strings.
+ * @class
+ */
 export default class StringBuilder {
+  /**
+   * Initializes the StringBuilder instance.
+   * @param {object} args - Arguments object.
+   */
   constructor(args) {
     this.args = args;
   }
 
+  /**
+   * Generates the CSS string based on the provided arguments.
+   * @returns {string} - The generated CSS string.
+   */
   getCss() {
     const _ = this;
     const args = this.args;
     if (args.utilityPseudo === undefined) args.utilityPseudo = "";
     if (args.attribute === undefined) args.attribute = "class";
 
-    let N = "",
-      S = "";
-    if (args.minify === false) {
-      N = "\n";
-      S = " ";
-    }
+    const N = args.minify === false ? "\n" : "";
+    const S = args.minify === false ? " " : "";
 
     args.attribute = args.attribute.replace(/:/g, "\\:");
 
@@ -24,23 +32,7 @@ export default class StringBuilder {
 
     let append = args.utilityPseudo;
 
-    let children = "",
-      parent = "";
-    if (args.children !== undefined) {
-      const childArr = args.children.split("-");
-      childArr.shift();
-      let cType = childArr.pop();
-      if (cType !== "first" && cType !== "all") {
-        childArr.push(cType);
-        cType = "first";
-      }
-
-      let childTag = childArr.join("-");
-      if (childTag.replace(/ /g, "").length === 0) childTag = "*";
-
-      if (cType === "first") children += " > " + childTag;
-      else if (cType === "all") children += " " + childTag;
-    }
+    let children = "", parent = "";
 
     if (args.tiny) {
       if (args.tiny.child && args.tiny.child.length > 0) {
@@ -59,8 +51,9 @@ export default class StringBuilder {
       }
     }
 
+    let elementId = '';
     if (args.element) {
-      parent += `[m-id="${args.element}"]`;
+      elementId += `[m-id="${args.element}"]`;
     }
 
     let themes = [""];
@@ -91,15 +84,17 @@ export default class StringBuilder {
       return args.body;
     }
 
-    if (
-      (args.pseudo.includes("class") || args.pseudo.includes("idle")) &&
-      (args.attribute === "class" || args.attribute === "idle")
-    ) {
+    if ((args.pseudo.includes("class") || args.pseudo.includes("idle")) &&
+      (args.attribute === "class" || args.attribute === "idle")) {
       return getClassString();
     } else {
       return getPseudoString();
     }
 
+    /**
+     * Generates CSS string for class attribute.
+     * @returns {string} - The generated CSS string.
+     */
     function getClassString() {
       let s = parent,
         first = true;
@@ -108,14 +103,18 @@ export default class StringBuilder {
         else s += `,${N}`;
 
         if (!_.args.isExtend)
-          s += `${theme}.${args.className}${children}${append}`;
-        else s += `${theme}${args.className}${children}${append}`;
+          s += `${theme}${elementId}.${args.className}${children}${append}`;
+        else s += `${theme}${elementId}${args.className}${children}${append}`;
       }
-      s += `${S}{${N}${S}${S}${S}${S}${args.body}${N}}${N}`;
+      s += `${S}{${N}${S.repeat(4)}${args.body}${N}}${N}`;
 
       return s;
     }
 
+    /**
+     * Generates CSS string for pseudo attributes.
+     * @returns {string} - The generated CSS string.
+     */
     function getPseudoString() {
       const pseudo = {
         parent: [],
@@ -138,9 +137,9 @@ export default class StringBuilder {
         }
 
         if (!_.args.isExtend) {
-          s += `[${args.attribute}~="${args.className}"]`;
+          s += `${elementId}[${args.attribute}~="${args.className}"]`;
         } else {
-          s += args.className;
+          s += `${elementId}${args.className}`;
         }
 
         const c = children.split(",");
@@ -168,7 +167,7 @@ export default class StringBuilder {
 
       let s = themeSelectors.join(`,${N}`);
 
-      s += `${S}{${N}${S}${S}${S}${S}${args.body}${N}}`;
+      s += `${S}{${N}${S.repeat(4)}${args.body}${N}}`;
 
       s += `${N}`;
       return s;
@@ -176,17 +175,33 @@ export default class StringBuilder {
   }
 }
 
+// Define pseudo selectors
 StringBuilder.pseudos = {
+  _: [
+    // :pseudo
+    "hover",
+    "focus",
+    "active",
+    "visited",
+    "disabled",
+    "checked",
+    "invalid",
+    "valid",
+    "optional",
+    "read-only",
+    "focus-visible",
+    "indeterminate",
+    "required",
+    "empty",
+
+    // ::pseudo
+    "before",
+    "after",
+    "selection",
+    "first-letter",
+    "first-line",
+  ],
   class: {},
-  hover: {
-    pseudo: "hover",
-  },
-  focus: {
-    pseudo: "focus",
-  },
-  active: {
-    pseudo: "active",
-  },
   first: {
     pseudo: "first-child",
   },
@@ -202,62 +217,14 @@ StringBuilder.pseudos = {
   "focus-within": {
     pseudo: "focus-within",
   },
-  visited: {
-    pseudo: "visited",
-  },
   "not-first": {
     pseudo: "not(:first-child)",
   },
   "not-last": {
     pseudo: "not(:last-child)",
   },
-  disabled: {
-    pseudo: "disabled",
-  },
-  checked: {
-    pseudo: "checked",
-  },
   "not-checked": {
     pseudo: "not(:checked)",
-  },
-  invalid: {
-    pseudo: "invalid",
-  },
-  valid: {
-    pseudo: "valid",
-  },
-  optional: {
-    pseudo: "optional",
-  },
-  "read-only": {
-    pseudo: "read-only",
-  },
-  "focus-visible": {
-    pseudo: "focus-visible",
-  },
-  indeterminate: {
-    pseudo: "indeterminate",
-  },
-  required: {
-    pseudo: "required",
-  },
-  empty: {
-    pseudo: "empty",
-  },
-  before: {
-    pseudo: ":before",
-  },
-  after: {
-    pseudo: ":after",
-  },
-  selection: {
-    pseudo: ":selection",
-  },
-  "first-letter": {
-    pseudo: ":first-letter",
-  },
-  "first-line": {
-    pseudo: ":first-line",
   },
   rtl: {
     parent: "[dir='rtl']",
@@ -269,6 +236,16 @@ StringBuilder.pseudos = {
     media: "print",
   },
 };
+
+let pre = "";
+for (let pseudos of StringBuilder.pseudos._) {
+  if(pseudos === "before")
+    pre = ":";
+  StringBuilder.pseudos[pseudos] = {
+    pseudo :pre + pseudos
+  };
+}
+delete StringBuilder.pseudos._;
 
 for (let i in StringBuilder.pseudos) {
   if (StringBuilder.pseudos.hasOwnProperty(i)) {

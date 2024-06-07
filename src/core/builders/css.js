@@ -1,64 +1,76 @@
 import StringBuilder from "./string.js";
-import UtilityOptions from "../utils/utilityOptions.js";
-import DynamicCss from "../dynamicCss/dynamicCss.js";
+import UtilityOptions from "../utilities/utilityOptions.js";
+import DynamicCss from "../utilities/dynamicCss.js";
 
+/**
+ * CssBuilder class.
+ * @class
+ */
 export default class CssBuilder {
+  /**
+   * Initializes the CssBuilder instance.
+   * @param {object} args - Arguments object.
+   */
   constructor(args) {
     this.args = args;
 
     this.utilityPseudo = '';
   }
 
+  /**
+   * Creates CSS based on the provided arguments.
+   * @returns {string} - The generated CSS string.
+   */
   create() {
-    let className = this.args.splittedClass.className;
-    let name = this.args.splittedClass.name;
-    let props = this.args.splittedClass.props;
+    const args = this.args
+    let className = args.splittedClass.className;
+    let name = args.splittedClass.name;
+    let props = args.splittedClass.props;
 
 
     let body = undefined;
-    if (this.args.splittedClass.body !== undefined) {
-      body = this.args.splittedClass.body;
+    if (args.splittedClass.body !== undefined) {
+      body = args.splittedClass.body;
     } else if (props !== undefined) {
       body = new DynamicCss({
-        ...this.args.splittedClass,
-        config: this.args.config,
-        usedColors: this.args.usedColors,
+        ...args.splittedClass,
+        config: args.config,
+        usedColors: args.usedColors,
       }).getCss();
     }
 
     let css = "";
     if (body !== undefined) {
-      if (this.args.splittedClass.isImportant) {
+      if (args.splittedClass.isImportant) {
         className = "\\!" + className;
         body = body.split(";").map(prop => `${prop} !important`).join(";");
       }
 
-      if (UtilityOptions[name] !== undefined && UtilityOptions[name].pseudo !== undefined) {
+      if (UtilityOptions[name]?.pseudo) {
         this.utilityPseudo = UtilityOptions[name].pseudo;
       }
 
-      const minify = this.args.config.options.minify;
-      if (!this.args.justBody) {
+      const minify = args.config.options.minify;
+      if (!args.justBody) {
         body = body.toString();
         if (minify === false)
           body = body.toString().replace(/;/g, ";\n    ");
 
         css = new StringBuilder({
-          pseudo: this.args.pseudo,
+          pseudo: args.pseudo,
           className,
-          theme: this.args.theme,
-          isExtend: this.args.isExtend,
-          selector: this.args.selector,
-          children: this.args.children,
-          attribute: this.args.attribute,
-          tiny: this.args.tiny,
+          theme: args.theme,
+          isExtend: args.isExtend,
+          selector: args.selector,
+          attribute: args.attribute,
+          tiny: args.tiny,
           utilityPseudo: this.utilityPseudo,
-          element: this.args.element,
+          element: args.element,
           minify,
           body
         }).getCss();
 
-        if (body.length === 0 && this.args.ignoreBodyRemove !== true) {
+        if (body.length === 0 && args.ignoreBodyRemove !== true) {
           css = css.replace(/[\n\r\t{}]/g, "");
         } else if (body.length === 0) {
           css = "";
@@ -66,8 +78,7 @@ export default class CssBuilder {
 
       } else css = body;
 
-
-      if (css !== undefined && (this.args.breakpoint !== undefined || this.args.tiny !== undefined) && minify === false)
+      if (css !== undefined && (args.breakpoint !== undefined || (args.tiny && args.tiny.parent.startsWith("@"))) && minify === false)
         css = css.replace(/\n/g, "\n    ");
     }
 

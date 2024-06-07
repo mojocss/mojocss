@@ -1,6 +1,6 @@
 {
   "name": "mojocss",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "The Atomic CSS Framework for crafting gorgeous UIs without shipping any CSS.",
   "main": "index.js",
   "unpkg": "dist/mojo.min.js",
@@ -18,9 +18,7 @@
     "cross-browser",
     "css-variables",
     "mobile-first",
-    "modern",
     "minimalist",
-    "fast",
     "scalable",
     "utility-first"
   ],
@@ -37,7 +35,7 @@
   "license": "MIT",
   "jest": {
     "testMatch": [
-      "<rootDir>/tests/**/*.*.js"
+      "<rootDir>/tests/**/*.test.js"
     ],
     "transform": {
       "\\.js$": "@swc/jest"
@@ -50,7 +48,11 @@
     "eslint": "^8.56.0",
     "jest": "^29.7.0",
     "webpack": "^5.51.1",
-    "webpack-cli": "^4.8.0"
+    "webpack-cli": "^4.8.0",
+    "terser-webpack-plugin": "^5.3.10"
   },
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "jsdom": "^24.0.0"
+  }
 }

@@ -1,11 +1,23 @@
-import UtilityProperties from "../dynamicCss/utilityProperties.js";
-import StaticUtilities from "../dynamicCss/staticUtilities.js";
+import UtilityProperties from "../utilities/utilityProperties.js";
+import StaticUtilities from "../utilities/staticUtilities.js";
 
+/**
+ * Splitter class for splitting class names and determining properties.
+ * @class
+ */
 export default class Splitter {
-  constructor(className, userUtilities) {
+  /**
+   * Initializes the Splitter instance.
+   * @param {string} className - The class name to split.
+   * @param {object} userUtilities - User-defined utilities.
+   * @param {object} config - Mojo configuration.
+   * @returns {object} - Object containing split class information.
+   */
+  constructor(className, userUtilities, config) {
+    const prefix = config.options.prefix.trim();
     const isImportant = className.startsWith("!");
     className = isImportant ? className.slice(1) : className;
-
+    className = className.slice(prefix.length)
 
     const classNameAppends = className.split("[");
     let appends;
@@ -15,7 +27,7 @@ export default class Splitter {
         .split(",");
 
     const classNameSplDirect = classNameAppends[0].split(":");
-    const classNameSplDynamic = classNameAppends[0].split("-(");
+    const classNameSplDynamic = classNameSplDirect[0].split("-(");
     const classNameSpl = classNameSplDynamic[0].split("-");
     let isNegative = false;
     if (classNameSpl[0] === "" && classNameSpl[1] !== "") {
@@ -47,6 +59,7 @@ export default class Splitter {
       name = classNameSpl.join("-"),
       props = undefined,
       isForcedValue = false,
+      isDirectUtility = false,
       body = undefined;
 
     if (
@@ -54,11 +67,12 @@ export default class Splitter {
       !classNameSplDirect[1].startsWith("+") &&
       !classNameSplDirect[1].startsWith("-")
     ) {
-      value = "(" + classNameSplDirect[1] + ")";
+      value = classNameSplDirect[1];
       props = classNameSplDirect[0];
       isForcedValue = true;
+      isDirectUtility = true;
     } else if (classNameSplDynamic[1] !== undefined) {
-      value = "(" + classNameSplDynamic[1];
+      value = classNameSplDynamic[1].substring(0, classNameSplDynamic[1].length - 1);
       props = UtilityProperties[name];
       if (props === undefined && UtilityProperties["_"].includes(name)) {
         props = name;
@@ -96,22 +110,28 @@ export default class Splitter {
         if (value === "") value = classNameSpl.pop();
         else value = classNameSpl.pop() + "-" + value;
       }
+
+      if(classNameSplDirect[1]){
+        value += ":" + classNameSplDirect[1];
+      }
     }
 
     if (name === "") {
       name = value;
     }
 
-    if (isNegative) value = "-" + value;
+    if (!isDirectUtility && isNegative)
+      value = value.startsWith("-") ? value.substring(1) : "-" + value;
 
     return {
-      className,
+      className: prefix + className,
       name,
       value,
       props,
       appends,
       body,
       isForcedValue,
+      isDirectUtility,
       isImportant,
     };
   }

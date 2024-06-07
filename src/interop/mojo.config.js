@@ -7,6 +7,8 @@ export default {
       enabled: false,
       theme: "dark",
     },
+    separator: ':',
+    prefix: ''
   },
   base: {
     themes: {
@@ -186,8 +188,8 @@ export default {
       sizing: "0.25rem",
       transition: "1ms",
       rounded: "0.125rem",
-      lighten: "2.0",
-      darken: "1.2",
+      lighten: 1.0,
+      darken: 1.0,
     },
   },
   capsules: [],
